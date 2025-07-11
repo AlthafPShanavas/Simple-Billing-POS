@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
+import './darkmode.css';
+import SettingsModal from './SettingsModal';
+import { registerShortcuts } from './shortcuts';
 
 // Utility to get start-of-day for a date
 function startOfDay(date) {
@@ -37,7 +40,22 @@ function generateBillNumber() {
   return 'DC' + Math.floor(100000 + Math.random() * 900000);
 }
 
+function getInitialBranding() {
+  const saved = localStorage.getItem('decode_branding');
+  return saved ? JSON.parse(saved) : {
+    shopName: 'DECODE',
+    address: 'Palace Road, Opposite Kohinoor Pump, Changanacherry',
+    mobile: '9995545144',
+    logo: '',
+    footer: 'Thank you for shopping with DECODE!'
+  };
+}
+
 function App() {
+  const [branding, setBranding] = useState(getInitialBranding());
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('decode_darkmode') === '1');
+  const [showSettings, setShowSettings] = useState(false);
+  const itemNameRef = useRef(null);
   const [items, setItems] = useState([]);
   const [form, setForm] = useState({
     name: '',
@@ -151,19 +169,47 @@ function App() {
 
   return (
     <>
-      <div className="header" style={{display:'flex',alignItems:'center',justifyContent:'center',gap:12}}>
-        <span className="decode-title">DECODE</span>
-        <span style={{fontWeight:700,letterSpacing:2,marginLeft:8}}>Textile Shop Billing</span>
+      <div className={`header${darkMode ? ' dark-mode' : ''}`} style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6,position:'relative'}}>
+
+          <div style={{position:'absolute',top:10,right:18,display:'flex',gap:10}}>
+            <button
+              onClick={()=>setDarkMode(dm=>!dm)}
+              title={darkMode?"Switch to Light Mode":"Switch to Dark Mode"}
+              style={{fontSize:20,padding:'6px 14px',borderRadius:8,cursor:'pointer'}}
+            >{darkMode ? '🌙' : '☀️'}</button>
+            <button
+              onClick={()=>setShowSettings(true)}
+              title="Shop Settings"
+              style={{fontSize:20,padding:'6px 14px',borderRadius:8,cursor:'pointer'}}
+            >⚙️</button>
+          </div>
+        {branding.logo && <img src={branding.logo} alt="Logo" style={{height:48,marginBottom:4}} />}
+        <span className="decode-title">{branding.shopName}</span>
+        <div className="decode-desc">The clothing destination</div>
       </div>
-      <div className="tab-bar">
-        <button className={tab==='billing'?"tab-active":""} onClick={()=>setTab('billing')}>Billing</button>
-        <button className={tab==='reports'?"tab-active":""} onClick={()=>setTab('reports')}>Reports</button>
-      </div>
-      {tab === 'billing' && (
-        <div className="billing-app">
-          <div style={{ width: '100%', marginBottom: 16, textAlign: 'center' }}>
-            <div style={{ fontWeight: 700, fontSize: '1.12rem', color: '#3a7bd5', letterSpacing: 1 }}>DECODE</div>
-            <div style={{ fontSize: '0.95rem', color: '#666' }}>palace road, changanacherry, 686101</div>
+      <nav className="main-nav">
+        <ul>
+          <li className={tab==='billing' ? 'active' : ''} onClick={()=>setTab('billing')}>
+            <span role="img" aria-label="Billing">🧾</span> Billing
+          </li>
+          <li className={tab==='reports' ? 'active' : ''} onClick={()=>setTab('reports')}>
+            <span role="img" aria-label="Reports">📊</span> Reports
+          </li>
+        </ul>
+      </nav>
+      <div className="app-centered-wrapper">
+        {tab === 'billing' && (
+          <div className="billing-app">
+          <div className="bill-header-print">
+            <div className="bill-title">BILL</div>
+            {branding.logo && <img src={branding.logo} alt="Logo" style={{height:48,margin:'0 auto 4px auto',display:'block'}} />}
+            <div className="shop-name">{branding.shopName}</div>
+            <div className="shop-address">{branding.address}<br />Mob: {branding.mobile}</div>
+            <hr className="bill-separator-print" />
+          </div>
+          <div className="no-print" style={{ width: '100%', marginBottom: 16, textAlign: 'center' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.12rem', color: '#3a7bd5', letterSpacing: 1 }}>{branding.shopName}</div>
+            <div style={{ fontSize: '0.95rem', color: '#666' }}>{branding.address}<br />Mob: {branding.mobile}</div>
           </div>
           <div style={{ width: '100%', marginBottom: 10, display: 'flex', justifyContent: 'space-between', fontSize: '0.98rem', color: '#444' }}>
             <span>Bill No: <strong>{billNo}</strong></span>
@@ -218,31 +264,31 @@ function App() {
               <table className="bill-table">
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>Item</th>
-                    <th>Price</th>
-                    <th>Discount</th>
-                    <th>Tax</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                    <th>Remove</th>
+                    <th className="idx-col">#</th>
+                    <th className="item-col">Item</th>
+                    <th className="num-col">Price</th>
+                    <th className="num-col">Discount</th>
+                    <th className="num-col">Tax</th>
+                    <th className="num-col">Qty</th>
+                    <th className="num-col">Total</th>
+                    <th className="no-print">Remove</th>
                   </tr>
                 </thead>
                 <tbody>
                   {items.map((item, idx) => (
                     <tr key={idx}>
-                      <td>{idx + 1}</td>
-                      <td>{item.name}</td>
-                      <td>Rs.{item.price.toFixed(2)}</td>
-                      <td>Rs.{item.discount.toFixed(2)}</td>
-                      <td>Rs.{item.tax.toFixed(2)}</td>
-                      <td>{item.quantity}</td>
-                      <td>Rs.{(
+                      <td className="idx-col">{idx + 1}</td>
+                      <td className="item-col">{item.name}</td>
+                      <td className="num-col">Rs.{item.price.toFixed(2)}</td>
+                      <td className="num-col">Rs.{item.discount.toFixed(2)}</td>
+                      <td className="num-col">Rs.{item.tax.toFixed(2)}</td>
+                      <td className="num-col">{item.quantity}</td>
+                      <td className="num-col">Rs.{(
                         item.price * item.quantity -
                         item.discount * item.quantity +
                         item.tax * item.quantity
                       ).toFixed(2)}</td>
-                      <td>
+                      <td className="no-print">
                         <button className="remove-btn" title="Remove Item" onClick={() => removeItem(idx)}>&#128465;</button>
                       </td>
                     </tr>
@@ -255,6 +301,7 @@ function App() {
                 <div>Tax: Rs.{totalTax.toFixed(2)}</div>
                 <div><strong>Total: Rs.{grandTotal.toFixed(2)}</strong></div>
               </div>
+              <div className="bill-footer-print">Thank you for shopping with DECODE!</div>
               <div style={{ marginBottom: 12 }}>
                 <input
                   type="tel"
@@ -264,11 +311,13 @@ function App() {
                   style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #ccc' }}
                 />
               </div>
-              <div className="actions">
-                <button className="print" onClick={printBill}>Print Bill</button>
-                <button className="whatsapp" onClick={sendWhatsApp} disabled={!customerPhone}>Send via WhatsApp</button>
-                <button className="clear" onClick={clearBill}>Clear Bill</button>
+              <div className="actions" style={{gap:24,marginTop:10}}>
+                <button className={`print${darkMode ? ' dark-mode' : ''}`} onClick={printBill} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Print Bill</button>
+                <button className={`whatsapp${darkMode ? ' dark-mode' : ''}`} onClick={sendWhatsApp} disabled={!customerPhone} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Send via WhatsApp</button>
+                <button className={`clear${darkMode ? ' dark-mode' : ''}`} onClick={clearBill} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Clear Bill</button>
               </div>
+
+              <SettingsModal show={showSettings} onClose={()=>setShowSettings(false)} branding={branding} setBranding={setBranding} />
             </>
           )}
           <div className="footer">
@@ -276,9 +325,9 @@ function App() {
             <span style={{ fontSize: '0.95rem', color: '#aaa' }}>Style. Comfort. Value.</span>
           </div>
         </div>
-      )}
-      {tab === 'reports' && (
-        <div className="reports-app">
+        )}
+        {tab === 'reports' && (
+          <div className="reports-app">
           <div className="reports-controls">
             <select value={reportType} onChange={e=>setReportType(e.target.value)}>
               <option value="daily">Daily</option>
@@ -290,7 +339,8 @@ function App() {
           </div>
           <ReportsTable bills={bills} reportType={reportType} reportDate={reportDate} />
         </div>
-      )}
+        )}
+      </div>
     </>
   );
 }

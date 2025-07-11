@@ -1,0 +1,37 @@
+body.dark-mode {
+  background: #23272f !important;
+  color: #e3e3e3 !important;
+}
+.header.dark-mode {
+  background: linear-gradient(90deg, #23272f 0%, #333950 100%) !important;
+  color: #fff !important;
+}
+.billing-app.dark-mode {
+  background: #23272f !important;
+  color: #e3e3e3 !important;
+  border-color: #444 !important;
+}
+.bill-table.dark-mode {
+  background: #23272f !important;
+  color: #e3e3e3 !important;
+}
+.bill-table.dark-mode th, .bill-table.dark-mode td {
+  background: #23272f !important;
+  color: #e3e3e3 !important;
+  border-color: #444 !important;
+}
+.settings-modal.dark-mode {
+  background: #23272f !important;
+  color: #e3e3e3 !important;
+  border-color: #444 !important;
+}
+input.dark-mode, textarea.dark-mode {
+  background: #23272f !important;
+  color: #e3e3e3 !important;
+  border-color: #444 !important;
+}
+button.dark-mode {
+  background: #333950 !important;
+  color: #e3e3e3 !important;
+  border-color: #444 !important;
+}
