@@ -1,0 +1,258 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(270deg, #f6d365, #fda085, #a1c4fd, #c2e9fb, #f6d365);
+  background-size: 200% 200%;
+  animation: animatedGradient 12s ease-in-out infinite;
+}
+
+@keyframes animatedGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="1.5" fill="%23fff7"/><circle cx="35" cy="35" r="1.5" fill="%23fff7"/></svg>');
+  opacity: 0.18;
+}
+
+
+.header {
+  width: 100vw;
+  background: linear-gradient(90deg, #3a7bd5 0%, #00d2ff 100%);
+  color: #fff;
+  padding: 22px 0 18px 0;
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  box-shadow: 0 6px 24px 0 rgba(58,123,213,0.18), 0 1.5px 6px rgba(0,0,0,0.09);
+  margin-bottom: 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+.decode-title {
+  font-size: 2.3rem;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  color: #3a7bd5;
+  text-shadow: 0 2px 8px #fff8, 0 1px 0 #fff;
+  border-bottom: 3px solid #00d2ff;
+  padding-bottom: 2px;
+  margin-right: 4px;
+}
+
+@media (max-width: 600px) {
+  .header {
+    font-size: 1.2rem;
+    padding: 12px 0 10px 0;
+  }
+  .header .icon {
+    font-size: 1.2rem;
+    margin-right: 7px;
+  }
+}
+
+
+.billing-app {
+  max-width: 700px;
+  width: 95vw;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 32px rgba(58,123,213,0.14), 0 1.5px 6px rgba(0,0,0,0.06);
+  padding: 44px 30px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 90px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .billing-app {
+    padding: 14px 2px 18px 2px;
+    margin-top: 65px;
+  }
+}
+
+
+h1 {
+  text-align: center;
+  margin-bottom: 32px;
+  color: #2d8cf0;
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.item-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.item-form input {
+  flex: 1 1 120px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.item-form button {
+  padding: 8px 24px;
+  background: linear-gradient(90deg, #3a7bd5 0%, #00d2ff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(58,123,213,0.09);
+  transition: background 0.2s, transform 0.15s;
+}
+.item-form button:hover {
+  background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+  transform: translateY(-2px) scale(1.04);
+}
+
+
+.bill-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.bill-table th, .bill-table td {
+  border: 1px solid #e6eaf0;
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.bill-table td .remove-btn {
+  color: #ff5858;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.bill-table td .remove-btn:hover {
+  color: #d90429;
+}
+
+
+.bill-table th {
+  background: #f0f6ff;
+  color: #333;
+}
+
+.summary {
+  margin-bottom: 18px;
+  text-align: right;
+  font-size: 1.12rem;
+  width: 100%;
+  padding-right: 6px;
+}
+
+
+.actions {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+
+.actions button {
+  padding: 10px 24px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(58,123,213,0.09);
+  transition: background 0.2s, transform 0.15s;
+}
+.actions button:hover {
+  opacity: 0.94;
+  transform: translateY(-2px) scale(1.04);
+}
+
+
+.actions .print {
+  background: linear-gradient(90deg, #00b96b 0%, #43e97b 100%);
+  color: #fff;
+}
+
+.actions .whatsapp {
+  background: linear-gradient(90deg, #25d366 0%, #128c7e 100%);
+  color: #fff;
+}
+
+.actions .clear {
+  background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
+  color: #fff;
+}
+
+
+.footer {
+  margin-top: 22px;
+  text-align: center;
+  color: #888;
+  font-size: 1.02rem;
+  letter-spacing: 0.5px;
+}
+
+@media print {
+  .item-form, .actions, .footer, .header {
+    display: none !important;
+  }
+  .billing-app {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .billing-app {
+    padding: 14px 2px 18px 2px;
+    margin-top: 65px;
+  }
+  .item-form {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bill-table th, .bill-table td {
+    font-size: 0.95rem;
+    padding: 6px;
+  }
+}
+
