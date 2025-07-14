@@ -3,6 +3,7 @@ import './App.css';
 import './darkmode.css';
 import SettingsModal from './SettingsModal';
 import { registerShortcuts } from './shortcuts';
+import { sendBillEmail } from './email';
 
 // Utility to get start-of-day for a date
 function startOfDay(date) {
@@ -149,7 +150,7 @@ function App() {
       });
       setBills(getBillsFromStorage());
     }
-    let billText = `Textile Shop Bill\n`;
+    let billText = `${branding.shopName || 'DECODE'}\n`;
     billText += `----------------------\n`;
     items.forEach((item, idx) => {
       billText += `${idx + 1}. ${item.name} x${item.quantity} - Rs.${item.price} each`;
@@ -162,6 +163,7 @@ function App() {
     billText += `Discount: Rs.${totalDiscount.toFixed(2)}\n`;
     billText += `Tax: Rs.${totalTax.toFixed(2)}\n`;
     billText += `Total: Rs.${grandTotal.toFixed(2)}\n`;
+    if (branding.footer) billText += `\n${branding.footer}\n`;
     
     const url = `https://wa.me/${customerPhone}?text=${encodeURIComponent(billText)}`;
     window.open(url, "_blank");
@@ -312,10 +314,49 @@ function App() {
                 />
               </div>
               <div className="actions" style={{gap:24,marginTop:10}}>
-                <button className={`print${darkMode ? ' dark-mode' : ''}`} onClick={printBill} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Print Bill</button>
-                <button className={`whatsapp${darkMode ? ' dark-mode' : ''}`} onClick={sendWhatsApp} disabled={!customerPhone} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Send via WhatsApp</button>
-                <button className={`clear${darkMode ? ' dark-mode' : ''}`} onClick={clearBill} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Clear Bill</button>
-              </div>
+  <button className={`print${darkMode ? ' dark-mode' : ''}`} onClick={printBill} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Print Bill</button>
+  <button className={`whatsapp${darkMode ? ' dark-mode' : ''}`} onClick={sendWhatsApp} disabled={!customerPhone} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Send via WhatsApp</button>
+  <button className={`email${darkMode ? ' dark-mode' : ''}`}
+    onClick={async () => {
+      const to = prompt('Enter recipient email:');
+      if (!to) return;
+      // Build bill as plain text
+      let billText = `${branding.shopName || 'Textile Shop'} Bill\n`;
+      billText += `${branding.address ? branding.address + '\n' : ''}`;
+      billText += `${branding.mobile ? 'Mobile: ' + branding.mobile + '\n' : ''}`;
+      billText += `Bill No: ${billNo}\n`;
+      billText += `Date: ${billDate.toLocaleDateString()} ${billDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}\n`;
+      billText += `----------------------\n`;
+      items.forEach((item, idx) => {
+        billText += `${idx + 1}. ${item.name} x${item.quantity} - Rs.${item.price} each`;
+        if (item.discount) billText += `, Discount: Rs.${item.discount}`;
+        if (item.tax) billText += `, Tax: Rs.${item.tax}`;
+        billText += "\n";
+      });
+      billText += `----------------------\n`;
+      billText += `Subtotal: Rs.${subtotal.toFixed(2)}\n`;
+      billText += `Discount: Rs.${totalDiscount.toFixed(2)}\n`;
+      billText += `Tax: Rs.${totalTax.toFixed(2)}\n`;
+      billText += `Total: Rs.${grandTotal.toFixed(2)}\n`;
+      if (branding.footer) billText += `\n${branding.footer}\n`;
+      try {
+        await sendBillEmail({
+          to,
+          subject: `${branding.shopName || 'Textile Shop'} Bill`,
+          message: billText,
+          fromEmail: branding.fromEmail || 'althafpshanavas786@gmail.com',
+        });
+        alert('Email sent successfully!');
+      } catch (err) {
+        alert('Failed to send email. Please check your email settings and network.');
+      }
+    }}
+    style={{fontSize:18,padding:'14px 28px',borderRadius:10}}
+  >
+    ✉️ Email
+  </button>
+  <button className={`clear${darkMode ? ' dark-mode' : ''}`} onClick={clearBill} style={{fontSize:18,padding:'14px 28px',borderRadius:10}}>Clear Bill</button>
+</div>
 
               <SettingsModal show={showSettings} onClose={()=>setShowSettings(false)} branding={branding} setBranding={setBranding} />
             </>

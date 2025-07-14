@@ -29,20 +29,23 @@ export default function SettingsModal({ show, onClose, branding, setBranding }) 
       <div className="settings-modal">
         <h2>Shop Branding</h2>
         <label>Shop Name:
-          <input name="shopName" value={localBranding.shopName} onChange={handleChange} />
+          <input name="shopName" value={localBranding.shopName} onChange={handleChange} autoFocus={false} />
         </label>
         <label>Address:
-          <textarea name="address" value={localBranding.address} onChange={handleChange} />
+          <textarea name="address" value={localBranding.address} onChange={handleChange} autoFocus={false} />
         </label>
         <label>Mobile:
-          <input name="mobile" value={localBranding.mobile} onChange={handleChange} />
+          <input name="mobile" value={localBranding.mobile} onChange={handleChange} autoFocus={false} />
         </label>
         <label>Logo:
           <input type="file" accept="image/*" onChange={handleLogoChange} />
           {localBranding.logo && <img src={localBranding.logo} alt="Logo" style={{height:50,marginTop:8}} />}
         </label>
         <label>Footer Note:
-          <input name="footer" value={localBranding.footer} onChange={handleChange} />
+          <input name="footer" value={localBranding.footer} onChange={handleChange} autoFocus={false} />
+        </label>
+        <label>From Email (for sending bills):
+          <input name="fromEmail" value={localBranding.fromEmail || ''} onChange={handleChange} placeholder="Enter sender email" autoFocus={false} />
         </label>
         <div className="settings-actions">
           <button onClick={handleSave}>Save</button>
